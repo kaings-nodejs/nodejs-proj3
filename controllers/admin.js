@@ -13,13 +13,21 @@ exports.postAddProduct = (req, res, next) => {
   const imageUrl = req.body.imageUrl;
   const price = req.body.price;
   const description = req.body.description;
-  const product = new Product(null, title, imageUrl, description, price);
-  product
-    .save()
-    .then(() => {
-      res.redirect('/');
-    })
-    .catch(err => console.log(err));
+
+  // to create data to populate in the database table
+  Product.create({
+    title: title,
+    price: price,
+    imageUrl: imageUrl,
+    description: description
+  })
+  .then(result => {
+    console.log(result);
+    res.redirect('/');
+  })
+  .catch(err => {
+    console.log(err);
+  });
 };
 
 exports.getEditProduct = (req, res, next) => {
