@@ -58,15 +58,46 @@ exports.postEditProduct = (req, res, next) => {
   const updatedPrice = req.body.price;
   const updatedImageUrl = req.body.imageUrl;
   const updatedDesc = req.body.description;
-  const updatedProduct = new Product(
-    prodId,
-    updatedTitle,
-    updatedImageUrl,
-    updatedDesc,
-    updatedPrice
-  );
-  updatedProduct.save();
-  res.redirect('/admin/products');
+
+  // way 1 to update DB content
+
+  Product.findByPk(prodId)
+  .then(product => {
+    product.title = updatedTitle;
+    product.price = updatedPrice;
+    product.description = updatedDesc;
+    product.imageUrl = updatedImageUrl;
+
+    return product.save();   // save the data to DB, if the product does not exist, it will create new one (same as create)
+  })
+  .then(result => {
+    console.log(result);
+    res.redirect('/admin/products');
+  })
+  .catch(err => {console.log(err)});
+  
+
+  // way 2 to update DB content
+  /*
+  Product.findByPk(prodId)
+  .then(product => {
+
+    const updatedProduct = {
+      title: updatedTitle,
+      price: updatedPrice,
+      description: updatedDesc,
+      imageUrl: updatedImageUrl
+    }
+
+    return product.update(updatedProduct);  // update DB. ref: http://docs.sequelizejs.com/manual/instances.html#updating---saving---persisting-an-instance
+  })
+  .then(result => {
+    console.log(result);
+    res.redirect('/admin/products');
+  })
+  .catch(err => {console.log(err)});
+  */
+
 };
 
 exports.getProducts = (req, res, next) => {
