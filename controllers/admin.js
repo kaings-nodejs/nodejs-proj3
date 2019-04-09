@@ -44,16 +44,17 @@ exports.getEditProduct = (req, res, next) => {
   }
   const prodId = req.params.productId;
 
-  Product.findByPk(prodId)
-  .then(product => {
-    if (!product) {
+  req.user
+  .getCopy_sqlz_products({ where: {id: prodId} })
+  .then(products => {
+    if (!products) {
       return res.redirect('/');
     }
     res.render('admin/edit-product', {
       pageTitle: 'Edit Product',
       path: '/admin/edit-product',
       editing: editMode,
-      product: product
+      product: products[0]
     });
   })
   .catch(err => {console.log(err)});
@@ -108,8 +109,11 @@ exports.postEditProduct = (req, res, next) => {
 };
 
 exports.getProducts = (req, res, next) => {
-  Product.findAll()
+  req.user
+  .getCopy_sqlz_products()
   .then(products => {
+    console.log('getProducts..... ', products);
+
     res.render('admin/products', {
       prods: products,
       pageTitle: 'Admin Products',
