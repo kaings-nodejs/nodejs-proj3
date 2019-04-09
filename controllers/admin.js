@@ -15,12 +15,16 @@ exports.postAddProduct = (req, res, next) => {
   const description = req.body.description;
 
   // to create data to populate in the database table
-  Product.create({
+  /* using Magic Association method. Since User hasMany Product/ Product belongsTo User.
+  Sequelize automatically generates this createProduct() 
+  (in our case since the DB is named 'copy_sqlz_product', the func is createCopy_sqlz_product()) in User model which we can use to 
+  create new product without having to manually specify the foreignkey. Previously, we have set globally the user in
+  app.js. Now, we can create product which belongs to that user as follows (we do not need to manually set the userId foreignkey) */
+  req.user.createCopy_sqlz_product({
     title: title,
     price: price,
     imageUrl: imageUrl,
-    description: description,
-    userId: req.user.id   // since table Product now has new column "userId". Retrieve "userId" from the middleware set in app.js
+    description: description
   })
   .then(result => {
     console.log(result);
@@ -29,6 +33,8 @@ exports.postAddProduct = (req, res, next) => {
   .catch(err => {
     console.log(err);
   });
+
+  console.log('user..... ', req.user.__proto__);  // to console.log all the Magic Methods
 };
 
 exports.getEditProduct = (req, res, next) => {
