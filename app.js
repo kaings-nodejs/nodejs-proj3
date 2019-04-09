@@ -30,10 +30,24 @@ User.hasMany(Product); // this is optional, the above is enough. This is basical
 
 // sync() creates model that is defined into connected database
 sequelize
-.sync({force: true})    // to force recreate all the tables. This will create `userId` column in the newly recreated Product table
+//.sync({force: true})    // to force recreate all the tables. This will create `userId` column in the newly recreated Product table
+.sync()
 .then(result => {
-    console.log(result);
-    app.listen(3000);
+    User.findByPk(1)
+    .then(user => {
+        if (!user) {
+            return User.create({
+                name: 'Will',
+                email: 'will@test.com'
+            });
+        }
+        return user;
+    })
+    .then(user => {
+        console.log(user);
+        app.listen(3000);
+    })
+    .catch(err => {console.log(err)});
 })
 .catch(err => {
     console.log(err);
