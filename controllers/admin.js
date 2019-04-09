@@ -19,7 +19,8 @@ exports.postAddProduct = (req, res, next) => {
     title: title,
     price: price,
     imageUrl: imageUrl,
-    description: description
+    description: description,
+    userId: req.user.id   // since table Product now has new column "userId". Retrieve "userId" from the middleware set in app.js
   })
   .then(result => {
     console.log(result);
