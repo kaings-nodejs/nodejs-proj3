@@ -2,7 +2,7 @@ const Sequelize = require('sequelize');
 
 const sequelize = require('../util/database');
 
-const Product = sequelize.define('sqlz_product', {
+const Product = sequelize.define('copy_sqlz_product', {
   id: {
     type: Sequelize.INTEGER,
     autoIncrement: true,
