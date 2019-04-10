@@ -7,6 +7,9 @@ const errorController = require('./controllers/error');
 const sequelize = require('./util/database');
 const Product = require('./models/product');
 const User = require('./models/user');
+const Cart = require('./models/cart');
+const CartItem = require('./models/cart-item');
+
 
 const app = express();
 
@@ -37,10 +40,17 @@ app.use(errorController.get404);
 Product.belongsTo(User, {constraints: true, onDelete: 'CASCADE'}); // ref: http://docs.sequelizejs.com/manual/associations.html
 User.hasMany(Product); // this is optional, the above is enough. This is basically similar as the above line
 
+Cart.belongsTo(User);   // one-to-one. Either one is OK
+User.hasOne(Cart);      // one-to-one. Either one is OK
+
+// many-to-many
+Cart.belongsToMany(Product, { through: CartItem });  
+Product.belongsToMany(Cart, { through: CartItem });
+
 // sync() creates model that is defined into connected database
 sequelize
-//.sync({force: true})    // to force recreate all the tables. This will create `userId` column in the newly recreated Product table
-.sync()
+.sync({force: true})    // to force recreate all the tables. This will create `userId` column in the newly recreated Product table
+//.sync()
 .then(result => {
     User.findByPk(1)
     .then(user => {
