@@ -52,6 +52,8 @@ sequelize
 //.sync({force: true})    // to force recreate all the tables. This will create `userId` column in the newly recreated Product table
 .sync()
 .then(result => {
+    let currentUser;
+
     User.findByPk(1)
     .then(user => {
         if (!user) {
@@ -64,10 +66,17 @@ sequelize
     })
     .then(user => {
         console.log(user);
-        return user.createCart();
+        currentUser = user;
+        return user.getCart();
     })
     .then(cart => {
-        console.log('cart..... ', cart);
+        console.log('getCart..... ', cart);
+        if (!cart) {
+            return currentUser.createCart();
+        }
+        return cart;
+    })
+    .then(cart => {
         app.listen(3000);
     })
     .catch(err => {console.log(err)});
