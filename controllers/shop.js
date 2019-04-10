@@ -1,5 +1,6 @@
 const Product = require('../models/product');
 const Cart = require('../models/cart');
+const User = require('../models/user');
 
 exports.getProducts = (req, res, next) => {
   Product.findAll()
@@ -60,24 +61,20 @@ exports.getIndex = (req, res, next) => {
 };
 
 exports.getCart = (req, res, next) => {
-  Cart.getCart(cart => {
-    Product.fetchAll(products => {
-      const cartProducts = [];
-      for (product of products) {
-        const cartProductData = cart.products.find(
-          prod => prod.id === product.id
-        );
-        if (cartProductData) {
-          cartProducts.push({ productData: product, qty: cartProductData.qty });
-        }
-      }
-      res.render('shop/cart', {
-        path: '/cart',
-        pageTitle: 'Your Cart',
-        products: cartProducts
-      });
+  req.user
+  .getCart()
+  .then(cart => {
+    console.log('getCart_cart.....', cart);
+    return cart.getCopy_sqlz_products();
+  })
+  .then(products => {
+    res.render('shop/cart', {
+      path: '/cart',
+      pageTitle: 'Your Cart',
+      products: products
     });
-  });
+  })
+  .catch(err => {console.log(err)});
 };
 
 exports.postCart = (req, res, next) => {

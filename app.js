@@ -49,8 +49,8 @@ Product.belongsToMany(Cart, { through: CartItem });
 
 // sync() creates model that is defined into connected database
 sequelize
-.sync({force: true})    // to force recreate all the tables. This will create `userId` column in the newly recreated Product table
-//.sync()
+//.sync({force: true})    // to force recreate all the tables. This will create `userId` column in the newly recreated Product table
+.sync()
 .then(result => {
     User.findByPk(1)
     .then(user => {
@@ -64,6 +64,10 @@ sequelize
     })
     .then(user => {
         console.log(user);
+        return user.createCart();
+    })
+    .then(cart => {
+        console.log('cart..... ', cart);
         app.listen(3000);
     })
     .catch(err => {console.log(err)});
