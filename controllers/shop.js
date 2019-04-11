@@ -1,6 +1,7 @@
 const Product = require('../models/product');
 const Cart = require('../models/cart');
 const User = require('../models/user');
+const CartItem = require('../models/cart-item');
 
 exports.getProducts = (req, res, next) => {
   Product.findAll()
@@ -114,10 +115,24 @@ exports.postCart = (req, res, next) => {
 
 exports.postCartDeleteProduct = (req, res, next) => {
   const prodId = req.body.productId;
-  Product.findById(prodId, product => {
-    Cart.deleteProduct(prodId, product.price);
+
+  req.user
+  .getCart()
+  .then(cart => {
+    console.log('postCartDeleteProduct_cart..... ', cart);
+    return cart.getCopy_sqlz_products({where: {id: prodId}});
+  })
+  .then(products => {
+    console.log('postCartDeleteProduct_products..... ', products);
+    console.log('postCartDeleteProduct_product.cartItem..... ', products[0].cartItem);
+    const product = products[0];
+    return product.cartItem.destroy();
+  })
+  .then(result => {
+    console.log('result..... ', result);
     res.redirect('/cart');
-  });
+  })
+  .catch(err => {console.log(err)})
 };
 
 exports.getOrders = (req, res, next) => {
