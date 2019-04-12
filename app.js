@@ -9,6 +9,8 @@ const Product = require('./models/product');
 const User = require('./models/user');
 const Cart = require('./models/cart');
 const CartItem = require('./models/cart-item');
+const Order = require('./models/order');
+const OrderItem = require('./models/order-item');
 
 
 const app = express();
@@ -45,7 +47,13 @@ User.hasOne(Cart);      // one-to-one. Either one is OK
 
 // many-to-many
 Cart.belongsToMany(Product, { through: CartItem });  
-Product.belongsToMany(Cart, { through: CartItem });
+Product.belongsToMany(Cart, { through: CartItem });     // optional
+
+// one-to-many, many-to-many
+Order.belongsTo(User);
+User.hasMany(Order);
+Order.belongsToMany(Product, { through: OrderItem });
+// Product.belongsToMany(Order, { through: OrderItem });   // optional
 
 // sync() creates model that is defined into connected database
 sequelize
