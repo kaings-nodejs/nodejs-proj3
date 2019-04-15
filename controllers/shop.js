@@ -135,6 +135,19 @@ exports.postCartDeleteProduct = (req, res, next) => {
   .catch(err => {console.log(err)})
 };
 
+exports.postOrder = (req, res, next) => {
+  req.user
+  .getCart()
+  .then(cart => {
+    console.log('postOrder_cart..... ', cart);
+    return cart.getCopy_sqlz_products();
+  })
+  .then(products => {
+    console.log('postOrder_products..... ', products);
+  })
+  .catch(err => {console.log(err)})
+};
+
 exports.getOrders = (req, res, next) => {
   res.render('shop/orders', {
     path: '/orders',
