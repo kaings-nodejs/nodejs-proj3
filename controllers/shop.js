@@ -136,9 +136,13 @@ exports.postCartDeleteProduct = (req, res, next) => {
 };
 
 exports.postOrder = (req, res, next) => {
+  let fetchedCart;
+
   req.user
   .getCart()
   .then(cart => {
+    fetchedCart = cart;
+
     console.log('postOrder_cart..... ', cart);
     console.log('postOrder_cart.cartItem..... ', cart.cartItem); // undefined
     return cart.getCopy_sqlz_products();
@@ -156,7 +160,9 @@ exports.postOrder = (req, res, next) => {
       }));
     })
     .then(result => {
-      res.redirect('orders');
+      fetchedCart.setCopy_sqlz_products(null);
+      
+      res.redirect('/orders');
     })
     .catch(err => {console.log(err)});
   })
