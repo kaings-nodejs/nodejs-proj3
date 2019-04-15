@@ -140,10 +140,25 @@ exports.postOrder = (req, res, next) => {
   .getCart()
   .then(cart => {
     console.log('postOrder_cart..... ', cart);
+    console.log('postOrder_cart.cartItem..... ', cart.cartItem); // undefined
     return cart.getCopy_sqlz_products();
   })
   .then(products => {
     console.log('postOrder_products..... ', products);
+    products.map(product => {console.log('postOrder_product.cartItem..... ', product.cartItem.quantity)}); // cartItem can be accessed via product
+
+    return req.user
+    .createOrder()
+    .then(order => {
+      return order.addCopy_sqlz_products(products.map(product => {
+        product.orderItem = {quantity: product.cartItem.quantity};
+        return product;
+      }));
+    })
+    .then(result => {
+      res.redirect('orders');
+    })
+    .catch(err => {console.log(err)});
   })
   .catch(err => {console.log(err)})
 };
