@@ -161,7 +161,7 @@ exports.postOrder = (req, res, next) => {
     })
     .then(result => {
       fetchedCart.setCopy_sqlz_products(null);
-      
+
       res.redirect('/orders');
     })
     .catch(err => {console.log(err)});
@@ -170,10 +170,18 @@ exports.postOrder = (req, res, next) => {
 };
 
 exports.getOrders = (req, res, next) => {
-  res.render('shop/orders', {
-    path: '/orders',
-    pageTitle: 'Your Orders'
-  });
+  req.user
+  .getOrders({include: ['copy_sqlz_products']})
+  .then(orders => {
+    console.log('getOrders_orders..... ', orders);
+    res.render('shop/orders', {
+      path: '/orders',
+      pageTitle: 'Your Orders',
+      orders: orders
+    });
+  })
+
+  
 };
 
 exports.getCheckout = (req, res, next) => {
